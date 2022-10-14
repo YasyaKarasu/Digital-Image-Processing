@@ -1,0 +1,11 @@
+*.o
+*.exe
+*.jpg
+*.png
+*.bmp
+*.doc
+*.docx
+*.pdf
+slide/
+document/
+.vscode/
