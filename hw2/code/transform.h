@@ -24,8 +24,8 @@ void rescale(GRAYSCALE **gray, int w, int h);
 BITMAPFILE Gray2GrayscaleImg(GRAYSCALE **gray, int w, int h);
 
 GRAYSCALE GrayThresh(GRAYSCALE **gray, int w, int h);
-BITMAPFILE GlobalBinarization(BITMAPFILE *imgfp);
-BITMAPFILE LocalAdaptiveBinarization(BITMAPFILE *imgfp);
+GRAYSCALE **GlobalBinarization(GRAYSCALE **gray, int w, int h);
+GRAYSCALE **LocalAdaptiveBinarization(GRAYSCALE **gray, int w, int h);
 
 GRAYSCALE **Dilation(GRAYSCALE **gray, int w, int h);
 GRAYSCALE **Erosion(GRAYSCALE **gray, int w, int h);

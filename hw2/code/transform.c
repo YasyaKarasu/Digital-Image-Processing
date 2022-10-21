@@ -206,31 +206,26 @@ GRAYSCALE GrayThresh(GRAYSCALE **gray, int w, int h){
     return res;
 }
 
-BITMAPFILE GlobalBinarization(BITMAPFILE *imgfp){
-    RGBQUAD **rgb = Raw2RGB(imgfp);
+GRAYSCALE **GlobalBinarization(GRAYSCALE **gray, int w, int h){
+    GRAYSCALE **res = (GRAYSCALE**)malloc(sizeof(GRAYSCALE*) * h);
+    for (int i = 0; i < h; i++)
+        res[i] = (GRAYSCALE*)malloc(sizeof(GRAYSCALE) * w);
 
-    GRAYSCALE **gray = RGB2Gray(rgb, imgfp->bmih.biWidth, abs(imgfp->bmih.biHeight));
-    free(rgb);
+    GRAYSCALE T = GrayThresh(gray, w, h);
+    for (int i = 0; i < h; i++)
+        for (int j = 0; j < w; j++)
+            res[i][j] = gray[i][j] >= T ? 255 : 0;
 
-    GRAYSCALE T = GrayThresh(gray, imgfp->bmih.biWidth, abs(imgfp->bmih.biHeight));
-    for (int i = 0; i < abs(imgfp->bmih.biHeight); i++)
-        for (int j = 0; j < imgfp->bmih.biWidth; j++)
-            gray[i][j] = gray[i][j] >= T ? 255 : 0;
-    BITMAPFILE bimg = Gray2GrayscaleImg(gray, imgfp->bmih.biWidth, abs(imgfp->bmih.biHeight));
-    free(gray);
-
-    return bimg;
+    return res;
 }
 
 #define DIVNUM 8
 
-BITMAPFILE LocalAdaptiveBinarization(BITMAPFILE *imgfp){
-    RGBQUAD **rgb = Raw2RGB(imgfp);
+GRAYSCALE **LocalAdaptiveBinarization(GRAYSCALE **gray, int w, int h){
+    GRAYSCALE **res = (GRAYSCALE **)malloc(sizeof(GRAYSCALE *) * h);
+    for (int i = 0; i < h; i++)
+        res[i] = (GRAYSCALE *)malloc(sizeof(GRAYSCALE) * w);
 
-    GRAYSCALE **gray = RGB2Gray(rgb, imgfp->bmih.biWidth, abs(imgfp->bmih.biHeight));
-    free(rgb);
-
-    int w = imgfp->bmih.biWidth, h = abs(imgfp->bmih.biHeight);
     int blockw = w / DIVNUM, blockh = h / DIVNUM;
     for (int i = 0; i < DIVNUM; i++)
         for (int j = 0; j < DIVNUM; j++){
@@ -253,14 +248,12 @@ BITMAPFILE LocalAdaptiveBinarization(BITMAPFILE *imgfp){
             for (int p = 0; p < window_h; p++)
                 for (int q = 0; q < window_w; q++){
                     window_p[p][q] = window_p[p][q] >= T ? 255 : 0;
-                    gray[i * blockh + p][j * blockw + q] = window_p[p][q];
+                    res[i * blockh + p][j * blockw + q] = window_p[p][q];
                 }
             free(window_p);
         }
-    BITMAPFILE bimg = Gray2GrayscaleImg(gray, w, h);
-    free(gray);
-
-    return bimg;
+        
+    return res;
 }
 
 GRAYSCALE **Dilation(GRAYSCALE **gray, int w, int h){
